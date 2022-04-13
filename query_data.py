@@ -7,11 +7,17 @@ def GetTusharedataToCsv(pro, endtime, path):
     df = pro.daily(**{"ts_code": "","trade_date": endtime,"start_date": 20220101,"end_date": endtime,"offset": "","limit": ""}, fields=["ts_code","close"])
     df = pro.stock_basic(market = '主板')
     print(df)
+    #data = df[['name', 'ts_code']]
     data = {'股票名称':df['name'], '股票代码':df['ts_code']}
     data = pd.DataFrame(data)
+    #print(data)
+    for i in data['股票名称']:          #
+        if 'ST' in i:
+            data = data.drop(index = (data.loc[i == data['股票名称']].index))
     print(data)
-    for i in data.股票代码:
-        print(i)
+    #north = pro.hk_hold(ts_code = '000002.sz')
+    #north = north.loc[north['trade_date'] == '20220412']
+    #print(north)
     data.to_csv(path, encoding = 'gbk')
 
 def main():
