@@ -33,7 +33,6 @@ def GetOnedata(code):
     ts.set_token('df8ba8bf0035f774d5d15c760a7bdf864bd22c45887e9fc7097769f4')
     myfav.append(code)
     t = thread.start_new_thread(slave, (code,))
-    time.sleep(1)
     # data.to_csv(path, encoding = 'gbk')
 
 def GetLikeData(time):
