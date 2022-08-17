@@ -1,19 +1,46 @@
 # -*- coding : UTF-8-*-
 import tushare as ts
 import pandas as pd
-import datetime
-import os
 import time
-from tkinter import *
-from tkinter import ttk
-from PIL import Image, ImageTk
-from main_page import *
+import sys
+if(sys.version[:1] == "3"):
+    import _thread as thread
+else:
+    import thread 
 
-global text
-global input
+myfav = []
+show = []
 
-def GetTusharedataToCsv(pro, endtime, path):
-    df = pro.daily(**{"ts_code": "","trade_date": endtime,"start_date": 20220101,"end_date": endtime,"offset": "","limit": ""}, fields=["ts_code","close"])
+def slave(code):
+    global show
+    global myfav
+    # while 1:
+    # for i in myfav:
+    data = ts.get_realtime_quotes(code)
+    show.append(list(data.loc[0,['code','name','price']]))
+    # show = [str(data['name']),str(data['price'])]
+    # print(data['price'])
+    # time.sleep(5)
+        # print('work good!')
+    # print('work failed!')
+    
+
+def GetOnedata(code):
+    global myfav
+    #df = pro.daily(ts_code = '002349.SZ', start_date='20220113', end_date='20220331')
+    #df = ts.pro_bar(trade_date= '20220401', start_date='20210131', end_date= endtime, ma=[50])  获取单个股票信息
+    #初始化ts参数
+    ts.set_token('df8ba8bf0035f774d5d15c760a7bdf864bd22c45887e9fc7097769f4')
+    myfav.append(code)
+    t = thread.start_new_thread(slave, (code,))
+    time.sleep(1)
+    # data.to_csv(path, encoding = 'gbk')
+
+def GetLikeData(time):
+    print('like')
+    ts.set_token('df8ba8bf0035f774d5d15c760a7bdf864bd22c45887e9fc7097769f4')
+    pro = ts.pro_api()
+    df = pro.daily(**{"ts_code": "","trade_date": time,"start_date": 20220101,"end_date": endtime,"offset": "","limit": ""}, fields=["ts_code","close"])
     df = pro.stock_basic(market = '主板')
     print(df)
     
@@ -35,36 +62,4 @@ def GetTusharedataToCsv(pro, endtime, path):
         if  i not in list(north['ts_code']):
             data = data.drop(index = (data.loc[data['股票代码'] == i].index))
     print(data)
-    
-    data.to_csv(path, encoding = 'gbk')
-
-def openapp(width, height):
-    #创建主窗口实例
-    root = Tk()
-    MainPage(root, width, height)
-    root.mainloop()
-
-def main():
-    #设置窗口大小
-    width = 700
-    height = 500
-    #保存文件路径
-    path = 'output.csv'
-    #初始化ts参数
-    ts.set_token('df8ba8bf0035f774d5d15c760a7bdf864bd22c45887e9fc7097769f4')
-    pro = ts.pro_api()
-    #获取当前日期
-    time = datetime.datetime
-    endtime = time.today().strftime('%Y%m%d')
-    print('股票量化分析开始 当前时间：'+ endtime)
-
-    #df = pro.daily(ts_code = '002349.SZ', start_date='20220113', end_date='20220331')
-    #df = ts.pro_bar(trade_date= '20220401', start_date='20210131', end_date= endtime, ma=[50])  获取单个股票信息
-    openapp(width, height)
-    #GetTusharedataToCsv(pro, endtime, path)
-    print('股票量化分析结束')
-    #os.system(path)
-    
-if __name__ == '__main__':
-    main()
     

@@ -1,14 +1,10 @@
 
 # -*- coding : UTF-8-*-
-from msilib.schema import Font
-import tushare as ts
-import pandas as pd
 import datetime
-import os
-import time
 from tkinter import *
 from tkinter import ttk
 from PIL import Image, ImageTk
+from query_data import *
 
 #定义父类
 class Page:
@@ -17,6 +13,7 @@ class Page:
         self.wid
         self.hei
         self.can
+        self.time
         
     def get_img(self):
         self.impath = '1.jpg'
@@ -36,6 +33,10 @@ class Page:
             print('请在文件目录添加btn.png的背景图片!')
             self.btnerr = 0
        
+    def gettime(self):
+        time = datetime.datetime
+        endtime = time.today().strftime('%Y%m%d')
+        self.time = endtime
 
     def setbg(self):
         #设置背景图片
@@ -52,6 +53,7 @@ class Page:
 '''
 class CheckPage(Page):
     def __init__(self, root, width, height):
+        self.gettime()
         self.root = root
         self.hei = height
         self.wid = width
@@ -66,30 +68,17 @@ class CheckPage(Page):
         self.creat()
 
     def creat(self):
-        colwid = 70
         print("check page!")
         #定义组件
         self.text.set('请输入股票代码或名称!')
-        self.frm = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
+        self.frm = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = 20, borderwidth=0)
         self.frm.place(x = 0, y = 0)
 
         self.title = ttk.Label(self.frm, style = 'B.TLabel', textvariable=self.text)
         self.input = ttk.Entry(self.frm, style = 'B.TLabel', width = 15, textvariable=self.input)
         self.btn1 = ttk.Button(self.frm, style = 'B.TLabel', text="搜索", cursor = 'hand2',width = 16, command = self.GetStockInfo)
         self.btn2 = ttk.Button(self.frm, style = 'B.TLabel', text="返回", cursor = 'hand2', width = 16, command = self.returnmain)
-        
-        self.frm1 = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
-        self.frm1.place(x = 0, y = 100)
-        columns = ('Name', 'Price', 'Ratio')
-        self.tree = ttk.Treeview(self.frm1,style='C.TLabel', height=1,show='headings', selectmode = BROWSE, columns=columns)  # 创建表格
-        self.tree.heading("Name", text = "Name")
-        self.tree.heading("Price", text = "Price")
-        self.tree.heading("Ratio", text = "Ratio")
-        self.tree.column("Name", anchor = "center", width=colwid)
-        self.tree.column("Price", anchor = "center", width=colwid)
-        self.tree.column("Ratio", anchor = "center", width=colwid)
-        self.tree.insert('', 0, values=('好', '63', '552'))
-        
+
         # self.VScroll = ttk.Scrollbar(self.frm, orient='vertical', command=self.listBox.yview)  # 创建滚动条
         # self.listBox.configure(yscrollcommand=self.VScroll.set)  # 滚动条与表格控件关联
         # self.VScroll.grid(row=1, column=5, sticky=NS)  # 滚动条放置位置
@@ -98,14 +87,33 @@ class CheckPage(Page):
         self.input.grid(column=1, row=0)
         self.btn1.grid(column=2, row=0)
         self.btn2.grid(column=3,row=0)
-        self.tree.grid(column=0,row=0)
         
         self.input.focus()
     def GetStockInfo(self):
-        self.data = 0
+        global show
+        colwid = 70
+        GetOnedata('000625')#(self.input.get())
+        print(show)
+        self.frm1 = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
+        self.frm1.place(x = 0, y = 22)
+        columns = ('1', '2', '3')
+        self.tree = ttk.Treeview(self.frm1,style='C.TLabel', height=1,show='headings', selectmode = BROWSE, columns=columns)  # 创建表格
+        self.tree.heading("1", text = "Name")
+        self.tree.heading("2", text = "Price")
+        self.tree.heading("3", text = "Ratio")
+        self.tree.column("1", anchor = "center", width=colwid)
+        self.tree.column("2", anchor = "center", width=colwid)
+        self.tree.column("3", anchor = "center", width=colwid)
+        self.tree.insert('', 0, values=show)
+        self.tree.grid(column=0,row=0)
+        
 
     def returnmain(self):
-        self.frm.destroy()
+        try:
+            self.frm.destroy()
+            self.frm1.destroy()
+        except AttributeError as e:
+            print(e)
         if self.err == 1:
             self.can.destroy()
         MainPage(self.root, self.wid, self.hei)
