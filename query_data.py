@@ -10,19 +10,21 @@ else:
 
 myfav = []
 show = []
+flash = 0
 
 def slave(code):
+    global flash
     global show
     global myfav
-    # while 1:
-    # for i in myfav:
-    data = ts.get_realtime_quotes(code)
-    show.append(list(data.loc[0,['code','name','price']]))
-    # show = [str(data['name']),str(data['price'])]
-    # print(data['price'])
-    # time.sleep(5)
-        # print('work good!')
-    # print('work failed!')
+    while 1:
+        if flash == 1:
+            for i in myfav:
+                data = ts.get_realtime_quotes(code)
+                show.append(list(data.loc[0,['code','name','price']]))
+            time.sleep(5)
+            flash = 0
+            print('work good!')
+    print('work failed!')
     
 
 def GetOnedata(code):

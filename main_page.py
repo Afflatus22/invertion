@@ -92,22 +92,24 @@ class CheckPage(Page):
         self.input.focus()
     def GetStockInfo(self):
         global show
+        global flash
         colwid = 70
         GetOnedata('000625')#(self.input.get())
-        time.sleep(2)
-        print(show)
-        self.frm1 = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
-        self.frm1.place(x = 0, y = 22)
-        columns = ('1', '2', '3')
-        self.tree = ttk.Treeview(self.frm1,style='C.TLabel', height=10,show='headings', selectmode = BROWSE, columns=columns)  # 创建表格
-        self.tree.heading("1", text = "Code")
-        self.tree.heading("2", text = "Name")
-        self.tree.heading("3", text = "Price")
-        self.tree.column("1", anchor = "center", width=colwid)
-        self.tree.column("2", anchor = "center", width=colwid)
-        self.tree.column("3", anchor = "center", width=colwid)
-        self.tree.insert('', 0, values=show[0])
-        self.tree.grid(column=0,row=0)
+        flash = 1
+        if flash == 0:
+            print(show)
+            self.frm1 = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
+            self.frm1.place(x = 0, y = 22)
+            columns = ('1', '2', '3')
+            self.tree = ttk.Treeview(self.frm1,style='C.TLabel', height=10,show='headings', selectmode = BROWSE, columns=columns)  # 创建表格
+            self.tree.heading("1", text = "Code")
+            self.tree.heading("2", text = "Name")
+            self.tree.heading("3", text = "Price")
+            self.tree.column("1", anchor = "center", width=colwid)
+            self.tree.column("2", anchor = "center", width=colwid)
+            self.tree.column("3", anchor = "center", width=colwid)
+            self.tree.insert('', 0, values=show[0])
+            self.tree.grid(column=0,row=0)
         
 
     def returnmain(self):
