@@ -1,8 +1,10 @@
 # -*- coding : UTF-8-*-
+from asyncio import Semaphore
 import tushare as ts
 import pandas as pd
 import time
 import sys
+import threading
 if(sys.version[:1] == "3"):
     import _thread as thread
 else:
@@ -11,19 +13,37 @@ else:
 myfav = []
 show = []
 flash = 0
+sem = threading.Semaphore(1)
+lock = thread.allocate_lock()
 
-def slave(code):
+def getflash():
+    lock.acquire()
     global flash
-    global show
-    global myfav
+    return flash
+
+def setflash(set, islock):
+    if islock == 1:
+        lock.acquire()
+    global flash
+    flash = set
+    lock.release()
+
+def slave():
     while 1:
+        global show
+        global myfav
+        flash = getflash()
         if flash == 1:
+            print('get info')
             for i in myfav:
-                data = ts.get_realtime_quotes(code)
+                data = ts.get_realtime_quotes(i)
                 show.append(list(data.loc[0,['code','name','price']]))
-            time.sleep(5)
-            flash = 0
+            time.sleep(1)
+            setflash(0,0)
             print('work good!')
+        else:
+            time.sleep(1)
+            lock.release()
     print('work failed!')
     
 
@@ -34,7 +54,7 @@ def GetOnedata(code):
     #初始化ts参数
     ts.set_token('df8ba8bf0035f774d5d15c760a7bdf864bd22c45887e9fc7097769f4')
     myfav.append(code)
-    t = thread.start_new_thread(slave, (code,))
+    print(myfav)
     # data.to_csv(path, encoding = 'gbk')
 
 def GetLikeData(time):

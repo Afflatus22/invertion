@@ -3,6 +3,7 @@ import datetime
 from tkinter import *
 from tkinter import ttk
 from main_page import *
+from query_data import *
 
 def openapp(width, height):
     #创建主窗口实例
@@ -19,6 +20,7 @@ def main():
     #获取当前日期
     endtime = datetime.datetime.today().strftime('%Y%m%d')
     print('股票量化分析开始 当前时间：'+ endtime)
+    thread.start_new_thread(slave, ())
     openapp(width, height)
     print('股票量化分析结束')
     #os.system(path)

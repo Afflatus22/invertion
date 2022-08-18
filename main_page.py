@@ -6,6 +6,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 from query_data import *
 import time
+import _thread as thread
 
 #定义父类
 class Page:
@@ -55,6 +56,7 @@ class Page:
 class CheckPage(Page):
     def __init__(self, root, width, height):
         self.gettime()
+        self.th1 = 1
         self.root = root
         self.hei = height
         self.wid = width
@@ -65,7 +67,7 @@ class CheckPage(Page):
         self.setbg()
         style = ttk.Style()
         style.configure("B.TLabel", relief=FLAT, foreground='black',anchor='center', font=('幼圆', 13),background= '#19CAAD')
-        style.configure("C.TLabel", width=5, relief=FLAT, foreground='red',anchor='center', font=('幼圆', 13),background= '#BEEDC7')
+        style.configure("C.TLabel", width=15, relief=FLAT, foreground='red',anchor='center', font=('幼圆', 15),background= '#BEEDC7')
         self.creat()
 
     def creat(self):
@@ -77,12 +79,26 @@ class CheckPage(Page):
 
         self.title = ttk.Label(self.frm, style = 'B.TLabel', textvariable=self.text)
         self.input = ttk.Entry(self.frm, style = 'B.TLabel', width = 15, textvariable=self.input)
-        self.btn1 = ttk.Button(self.frm, style = 'B.TLabel', text="搜索", cursor = 'hand2',width = 16, command = self.GetStockInfo)
+        self.btn1 = ttk.Button(self.frm, style = 'B.TLabel', text="添加", cursor = 'hand2',width = 16, command = self.GetStockInfo)
         self.btn2 = ttk.Button(self.frm, style = 'B.TLabel', text="返回", cursor = 'hand2', width = 16, command = self.returnmain)
 
         # self.VScroll = ttk.Scrollbar(self.frm, orient='vertical', command=self.listBox.yview)  # 创建滚动条
         # self.listBox.configure(yscrollcommand=self.VScroll.set)  # 滚动条与表格控件关联
         # self.VScroll.grid(row=1, column=5, sticky=NS)  # 滚动条放置位置
+        colwid = 70
+        self.frm1 = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
+        self.frm1.place(x = 0, y = 22)
+        columns = ('1', '2', '3')
+        self.tree = ttk.Treeview(self.frm1, style='C.TLabel', height=10,show='headings', selectmode = BROWSE, columns=columns)  # 创建表格
+        self.tree.heading("1", text = "Code")
+        self.tree.heading("2", text = "Name")
+        self.tree.heading("3", text = "Price")
+        self.tree.column("1", anchor = "center", width=colwid)
+        self.tree.column("2", anchor = "center", width=colwid)
+        self.tree.column("3", anchor = "center", width=colwid)
+        if self.th1 == 1:
+            thread.start_new_thread(self.freshStock, ())
+            self.th1 = 0
 
         self.title.grid(column=0, row=0)
         self.input.grid(column=1, row=0)
@@ -90,29 +106,35 @@ class CheckPage(Page):
         self.btn2.grid(column=3,row=0)
         
         self.input.focus()
+
+    def freshStock(self):
+        while 1:
+            if self.th1 == 1:
+                break
+            setflash(1, 1)
+            print('get flash')
+            flash = getflash()
+            print('get flash ok')
+            if flash == 0:
+                global show
+                print(show)
+                lock.release()
+                index = 0
+                for i in show:
+                    self.tree.insert('', index, values=i)
+                    index += 1
+                self.tree.grid(column=0,row=0)
+                show.clear()
+            else:
+                lock.release()
+            time.sleep(3)
+            print('fresh')
+
     def GetStockInfo(self):
-        global show
-        global flash
-        colwid = 70
         GetOnedata('000625')#(self.input.get())
-        flash = 1
-        if flash == 0:
-            print(show)
-            self.frm1 = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
-            self.frm1.place(x = 0, y = 22)
-            columns = ('1', '2', '3')
-            self.tree = ttk.Treeview(self.frm1,style='C.TLabel', height=10,show='headings', selectmode = BROWSE, columns=columns)  # 创建表格
-            self.tree.heading("1", text = "Code")
-            self.tree.heading("2", text = "Name")
-            self.tree.heading("3", text = "Price")
-            self.tree.column("1", anchor = "center", width=colwid)
-            self.tree.column("2", anchor = "center", width=colwid)
-            self.tree.column("3", anchor = "center", width=colwid)
-            self.tree.insert('', 0, values=show[0])
-            self.tree.grid(column=0,row=0)
-        
 
     def returnmain(self):
+        self.th1 = 1
         try:
             self.frm.destroy()
             self.frm1.destroy()
