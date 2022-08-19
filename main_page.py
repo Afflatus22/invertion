@@ -115,10 +115,12 @@ class CheckPage(Page):
         self.input.focus()
 
     def goToTop(self,e):
-        # self.tree.focus().tag(background='white')
-        itm = self.tree.set(self.tree.focus()) 
-        self.tree.move(self.tree.focus(),'', 0)
-        MoveTopOrRoot(str(itm["1"]),1)
+        self.tree.tag_configure("select" ,foreground='purple',background='white')
+        self.tree.item(self.tree.focus(), tags='select')
+        if self.tree.focus() != '':
+            itm = self.tree.set(self.tree.focus()) 
+            self.tree.move(self.tree.focus(),'', 0)
+            MoveTopOrRoot(str(itm["1"]),1)
 
     def goToBottom(self,e):
         self.tree.focus()
