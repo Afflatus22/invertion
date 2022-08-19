@@ -18,6 +18,17 @@ flash = 0
 sem = threading.Semaphore(1)
 lock = thread.allocate_lock()
 
+def MoveTopOrRoot(code, torr):
+    global myfav
+    for i in myfav:
+        if code == i:
+            if torr == 1:
+                myfav.remove(i)
+                myfav.append(i)
+            else:
+                myfav.remove(i)
+                myfav.insert(0, i)
+
 def getnums():
     global nums
     return nums
@@ -36,11 +47,11 @@ def setflash(set, islock):
 
 def slave():
     while 1:
-        global show
-        global myfav
         flash = getflash()
         if flash == 1:
             # print('接到消息时')
+            global show
+            global myfav
             for i in myfav:
                 data = ts.get_realtime_quotes(i)
                 show.append(list(data.loc[0,['code','name','price']]))

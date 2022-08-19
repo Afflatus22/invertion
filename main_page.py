@@ -57,6 +57,7 @@ class CheckPage(Page):
     def __init__(self, root, width, height):
         self.gettime()
         self.th1 = 1
+        self.treelist = []
         self.root = root
         self.hei = height
         self.wid = width
@@ -68,7 +69,7 @@ class CheckPage(Page):
         style = ttk.Style()
         style.configure("A.TLabel", relief=FLAT, foreground='red',anchor='center', font=('幼圆', 13),background= '#FDE6E0')
         style.configure("B.TLabel", relief=FLAT, foreground='black',anchor='center', font=('幼圆', 13),background= '#19CAAD')
-        style.configure("C.TLabel", width=15, relief=FLAT, foreground='red',anchor='center', font=('幼圆', 15),background= '#BEEDC7')
+        style.configure("C.TLabel", width=15, relief=FLAT, foreground='red',anchor='center', font=('幼圆', 15),background= 'black')
         style.configure("D.TLabel", relief=FLAT, foreground='pink',anchor='center', font=('幼圆', 13),background= 'white')
         self.creat()
 
@@ -99,6 +100,8 @@ class CheckPage(Page):
         self.tree.column("1", anchor = "center", width=colwid)
         self.tree.column("2", anchor = "center", width=colwid)
         self.tree.column("3", anchor = "center", width=colwid)
+        self.tree.bind('<ButtonRelease-1>',self.goToTop)
+        self.tree.bind('<ButtonRelease-3>',self.goToBottom)
         if self.th1 == 1:
             thread.start_new_thread(self.freshStock, ())
             self.th1 = 0
@@ -110,6 +113,18 @@ class CheckPage(Page):
         self.btn3.grid(column=4, row=0)
         
         self.input.focus()
+
+    def goToTop(self,e):
+        # self.tree.focus().tag(background='white')
+        itm = self.tree.set(self.tree.focus()) 
+        self.tree.move(self.tree.focus(),'', 0)
+        MoveTopOrRoot(str(itm["1"]),1)
+
+    def goToBottom(self,e):
+        self.tree.focus()
+        itm = self.tree.set(self.tree.focus()) 
+        self.tree.move(self.tree.focus(),'', "end")
+        MoveTopOrRoot(str(itm["1"]),0)
 
     def minisize(self):
         nums = getnums()
@@ -133,10 +148,8 @@ class CheckPage(Page):
                 for i in self.tree.get_children():
                     self.tree.delete(i)
                 # print(show)
-                index = 0
                 for i in show:
-                    self.tree.insert('', index, values=i)
-                    index += 1
+                    self.tree.insert('', 0, values=i)
                 self.tree.grid(column=0,row=0)
                 show.clear()
                 lock.release()
