@@ -26,13 +26,13 @@ class Page:
             img = Image.open(self.impath).resize((self.wid,self.hei))
             self.im = ImageTk.PhotoImage(img)
         except FileNotFoundError as e:
-            print('请在文件目录添加1.jpg的背景图片!')
+            # print('请在文件目录添加1.jpg的背景图片!')
             self.err = 0
         try:
             btn = Image.open(self.btnpath)
             self.btn = ImageTk.PhotoImage(btn)
         except FileNotFoundError as e:
-            print('请在文件目录添加btn.png的背景图片!')
+            # print('请在文件目录添加btn.png的背景图片!')
             self.btnerr = 0
        
     def gettime(self):
@@ -66,21 +66,24 @@ class CheckPage(Page):
         self.get_img()
         self.setbg()
         style = ttk.Style()
+        style.configure("A.TLabel", relief=FLAT, foreground='red',anchor='center', font=('幼圆', 13),background= '#FDE6E0')
         style.configure("B.TLabel", relief=FLAT, foreground='black',anchor='center', font=('幼圆', 13),background= '#19CAAD')
         style.configure("C.TLabel", width=15, relief=FLAT, foreground='red',anchor='center', font=('幼圆', 15),background= '#BEEDC7')
+        style.configure("D.TLabel", relief=FLAT, foreground='pink',anchor='center', font=('幼圆', 13),background= 'white')
         self.creat()
 
     def creat(self):
         print("check page!")
         #定义组件
-        self.text.set('请输入股票代码或名称!')
+        self.text.set('请输入股票代码:')
         self.frm = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = 20, borderwidth=0)
         self.frm.place(x = 0, y = 0)
 
-        self.title = ttk.Label(self.frm, style = 'B.TLabel', textvariable=self.text)
-        self.input = ttk.Entry(self.frm, style = 'B.TLabel', width = 15, textvariable=self.input)
-        self.btn1 = ttk.Button(self.frm, style = 'B.TLabel', text="添加", cursor = 'hand2',width = 16, command = self.GetStockInfo)
-        self.btn2 = ttk.Button(self.frm, style = 'B.TLabel', text="返回", cursor = 'hand2', width = 16, command = self.returnmain)
+        self.title = ttk.Label(self.frm, style = 'A.TLabel', textvariable=self.text)
+        self.input = ttk.Entry(self.frm, style = 'D.TLabel', width = 15, textvariable=self.input)
+        self.btn1 = ttk.Button(self.frm, style = 'B.TLabel', text="添加", cursor = 'hand2',width = 8, command = self.GetStockInfo)
+        self.btn2 = ttk.Button(self.frm, style = 'B.TLabel', text="返回", cursor = 'hand2', width = 8, command = self.returnmain)
+        self.btn3 = ttk.Button(self.frm, style = 'B.TLabel', text="隐藏", cursor = 'hand2', width = 8, command = self.minisize)
 
         # self.VScroll = ttk.Scrollbar(self.frm, orient='vertical', command=self.listBox.yview)  # 创建滚动条
         # self.listBox.configure(yscrollcommand=self.VScroll.set)  # 滚动条与表格控件关联
@@ -103,38 +106,52 @@ class CheckPage(Page):
         self.title.grid(column=0, row=0)
         self.input.grid(column=1, row=0)
         self.btn1.grid(column=2, row=0)
-        self.btn2.grid(column=3,row=0)
+        self.btn2.grid(column=3, row=0)
+        self.btn3.grid(column=4, row=0)
         
         self.input.focus()
 
+    def minisize(self):
+        nums = getnums()
+        hei = 45+nums*22
+        self.root.geometry(f'400x{hei}+0+900')
+        self.root.resizable(TRUE,TRUE)
+
     def freshStock(self):
+        print('start')
         while 1:
-            if self.th1 == 1:
-                break
             setflash(1, 1)
-            print('get flash')
+            time.sleep(0.5)
             flash = getflash()
-            print('get flash ok')
-            if flash == 0:
-                global show
-                print(show)
+            global show
+            if self.th1 == 1:
+                show.clear()
                 lock.release()
+                break
+            if flash == 0:
+                # print('刷新屏幕中')
+                for i in self.tree.get_children():
+                    self.tree.delete(i)
+                # print(show)
                 index = 0
                 for i in show:
                     self.tree.insert('', index, values=i)
                     index += 1
                 self.tree.grid(column=0,row=0)
                 show.clear()
-            else:
                 lock.release()
-            time.sleep(3)
-            print('fresh')
+                # print('刷新屏幕完成:' + str(datetime.datetime.now()))
+            else:
+                print('出现错误')
+                lock.release()
+            time.sleep(1.5)
 
     def GetStockInfo(self):
-        GetOnedata('000625')#(self.input.get())
+        GetOnedata(self.input.get())
 
     def returnmain(self):
         self.th1 = 1
+        time.sleep(0.7)
         try:
             self.frm.destroy()
             self.frm1.destroy()
@@ -235,7 +252,7 @@ class MainPage(Page):
         self.root = root
         # root.iconbitmap('1.jpg')
         self.root.geometry(f'{width}x{height}+{int(screen_width)}+{int(screen_height)}')
-        # self.root.resizable(FALSE, FALSE)
+        self.root.resizable(FALSE, FALSE)
         self.root.title('analyse stock')
         self.root.configure(bg='#BEEDC7')
         self.creat()
@@ -258,7 +275,7 @@ class MainPage(Page):
         self.title = ttk.Label(self.frm,style = 'BW.TLabel',anchor='center',textvariable=self.text)
         self.blank1 = ttk.Label(self.frm,style = 'BW.TLabel',anchor='center')
         self.blank2 = ttk.Label(self.frm,style = 'BW.TLabel',anchor='center')
-        self.checkbut = ttk.Button(self.frm, style = 'A.TLabel', text="查询个股", cursor = 'hand2',width = 16, command = self.gotocheck)
+        self.checkbut = ttk.Button(self.frm, style = 'A.TLabel', text="盯盘精灵", cursor = 'hand2',width = 16, command = self.gotocheck)
         self.blank3 = ttk.Label(self.frm,style = 'BW.TLabel',anchor='center')
         self.choosebut = ttk.Button(self.frm,style = 'A.TLabel', text="量化选股", cursor = 'hand2', width = 16, command = self.gotochoose)
 

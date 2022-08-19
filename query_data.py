@@ -4,17 +4,23 @@ import tushare as ts
 import pandas as pd
 import time
 import sys
+import os
 import threading
 if(sys.version[:1] == "3"):
     import _thread as thread
 else:
     import thread 
 
+nums = 0
 myfav = []
 show = []
 flash = 0
 sem = threading.Semaphore(1)
 lock = thread.allocate_lock()
+
+def getnums():
+    global nums
+    return nums
 
 def getflash():
     lock.acquire()
@@ -34,30 +40,49 @@ def slave():
         global myfav
         flash = getflash()
         if flash == 1:
-            print('get info')
+            # print('接到消息时')
             for i in myfav:
                 data = ts.get_realtime_quotes(i)
                 show.append(list(data.loc[0,['code','name','price']]))
             time.sleep(1)
             setflash(0,0)
-            print('work good!')
+            # print('完成工作')
         else:
-            time.sleep(1)
+            # print('空闲中')
+            time.sleep(0.2)
             lock.release()
     print('work failed!')
-    
 
 def GetOnedata(code):
     global myfav
-    #df = pro.daily(ts_code = '002349.SZ', start_date='20220113', end_date='20220331')
-    #df = ts.pro_bar(trade_date= '20220401', start_date='20210131', end_date= endtime, ma=[50])  获取单个股票信息
+    global nums
     #初始化ts参数
     ts.set_token('df8ba8bf0035f774d5d15c760a7bdf864bd22c45887e9fc7097769f4')
     myfav.append(code)
-    print(myfav)
-    # data.to_csv(path, encoding = 'gbk')
+    f = open('./myfavlist.txt', 'a', encoding='utf-8')
+    f.write(code + '\n')
+    nums += 1
+    f.close()
+
+def GetItemsFromFile():
+    global myfav
+    global nums
+    nums = 0
+    path = './myfavlist.txt'
+    if os.access(path, os.F_OK):
+        f = open(path, 'r', encoding= 'utf-8')
+        items = f.readlines()
+        for i in items:
+            if i.strip('\n') != '':
+                myfav.append(i.strip('\n'))
+                nums += 1
+    else:
+        f = open(path, 'w', encoding='utf-8')
+        f.close()
 
 def GetLikeData(time):
+     #df = pro.daily(ts_code = '002349.SZ', start_date='20220113', end_date='20220331')
+    #df = ts.pro_bar(trade_date= '20220401', start_date='20210131', end_date= endtime, ma=[50])  获取单个股票信息
     print('like')
     ts.set_token('df8ba8bf0035f774d5d15c760a7bdf864bd22c45887e9fc7097769f4')
     pro = ts.pro_api()
@@ -83,4 +108,4 @@ def GetLikeData(time):
         if  i not in list(north['ts_code']):
             data = data.drop(index = (data.loc[data['股票代码'] == i].index))
     print(data)
-    
+    # data.to_csv(path, encoding = 'gbk')
