@@ -285,22 +285,21 @@ class MainPage(Page):
         #设置框架
         self.frm = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
         self.frm.place(x = 150, y = 100)
+        self.frm1 = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
+        self.frm1.place(x = 233, y = 230)
+        self.frm2 = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
+        self.frm2.place(x = 233, y = 300)
 
         #设置控件
         self.title = ttk.Label(self.frm,style = 'BW.TLabel',anchor='center',textvariable=self.text)
-        self.blank1 = ttk.Label(self.frm,style = 'BW.TLabel',anchor='center')
-        self.blank2 = ttk.Label(self.frm,style = 'BW.TLabel',anchor='center')
-        self.checkbut = ttk.Button(self.frm, style = 'A.TLabel', text="盯盘精灵", cursor = 'hand2',width = 16, command = self.gotocheck)
-        self.blank3 = ttk.Label(self.frm,style = 'BW.TLabel',anchor='center')
-        self.choosebut = ttk.Button(self.frm,style = 'A.TLabel', text="量化选股", cursor = 'hand2', width = 16, command = self.gotochoose)
+        self.checkbut = ttk.Button(self.frm1, style = 'A.TLabel', text="盯盘精灵", cursor = 'hand2',width = 16, command = self.gotocheck)
+        # self.blank3 = ttk.Label(self.frm,style = 'BW.TLabel',anchor='center')
+        self.choosebut = ttk.Button(self.frm2,style = 'A.TLabel', text="量化选股", cursor = 'hand2', width = 16, command = self.gotochoose)
 
         #控件布局
         self.title.grid(column=0, row=0)
-        self.blank1.grid(column=0, row=1)
-        self.blank2.grid(column=0, row=2)
-        self.checkbut.grid(column=0, row=3)
-        self.blank3.grid(column=0,row=4)
-        self.choosebut.grid(column=0, row=5)
+        self.checkbut.grid(column=0, row=0)
+        self.choosebut.grid(column=0, row=0)
         # self.checkbut.configure(relief='flat',activebackground='yellow')
     def gotocheck(self):
         print("check!")

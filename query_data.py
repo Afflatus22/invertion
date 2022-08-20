@@ -55,13 +55,13 @@ def slave():
             for i in myfav:
                 data = ts.get_realtime_quotes(i)
                 show.append(list(data.loc[0,['code','name','price']]))
-            time.sleep(1)
             setflash(0,0)
+            time.sleep(0.3)
             # print('完成工作')
         else:
             # print('空闲中')
-            time.sleep(0.2)
             lock.release()
+            time.sleep(0.2)
     print('work failed!')
 
 def GetOnedata(code):
