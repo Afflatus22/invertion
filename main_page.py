@@ -1,14 +1,8 @@
-
-# -*- coding : UTF-8-*-
-from asyncio import events
-import datetime
+# --coding: utf-8 --
 from tkinter import *
 from tkinter import ttk
-from turtle import screensize
 from PIL import Image, ImageTk
 from query_data import *
-import time
-import _thread as thread
 
 #定义父类
 class Page:
@@ -111,7 +105,8 @@ class CheckPage(Page):
         self.input.bind('<Return>', self.GetStockInfo)
         self.tree.bind('<ButtonRelease-1>',self.goToTop)
         self.tree.bind('<Button-3>', self.selection)
-        self.tree.bind('<Double-1>', self.deleteitem)
+        self.tree.bind('<Button-2>', self.selection)
+        self.tree.bind('<ButtonRelease-2>', self.deleteitem)
         self.tree.bind('<ButtonRelease-3>',self.goToBottom)
 
         self.title.grid(column=0, row=0)
