@@ -28,6 +28,10 @@ def MoveTopOrRoot(code, torr):
             else:
                 myfav.remove(i)
                 myfav.insert(0, i)
+    f = open('./myfavlist.txt', 'w', encoding='utf-8')
+    for i in myfav:
+        f.write(i + '\n')
+    f.close()
 
 def getnums():
     global nums
@@ -54,7 +58,7 @@ def slave():
             global myfav
             for i in myfav:
                 data = ts.get_realtime_quotes(i)
-                show.append(list(data.loc[0,['code','name','price']]))
+                show.append(list(data.loc[0,['code','name','price','pre_close']]))
             setflash(0,0)
             time.sleep(0.3)
             # print('完成工作')
@@ -87,6 +91,7 @@ def GetItemsFromFile():
             if i.strip('\n') != '':
                 myfav.append(i.strip('\n'))
                 nums += 1
+        f.close()
     else:
         f = open(path, 'w', encoding='utf-8')
         f.close()

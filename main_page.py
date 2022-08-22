@@ -28,12 +28,12 @@ class Page:
         except FileNotFoundError as e:
             # print('请在文件目录添加1.jpg的背景图片!')
             self.err = 0
-        try:
-            btn = Image.open(self.btnpath)
-            self.btn = ImageTk.PhotoImage(btn)
-        except FileNotFoundError as e:
-            # print('请在文件目录添加btn.png的背景图片!')
-            self.btnerr = 0
+        # try:
+        #     btn = Image.open(self.btnpath)
+        #     self.btn = ImageTk.PhotoImage(btn)
+        # except FileNotFoundError as e:
+        #     # print('请在文件目录添加btn.png的背景图片!')
+        #     self.btnerr = 0
        
     def gettime(self):
         time = datetime.datetime
@@ -46,7 +46,7 @@ class Page:
             print("yep")
             self.can = Canvas(self.root, width = self.wid, height = self.hei, bg='white')
             self.can.create_image(self.wid/2,self.hei/2,image = self.im)    #图片中心点位置
-            self.can.grid()
+            self.can.grid(column=0,row=0)
 
 '''
 --------------------------------------
@@ -58,14 +58,14 @@ class CheckPage(Page):
         self.gettime()
         self.th1 = 1
         self.treelist = []
+        self.im = ''
         self.root = root
         self.hei = height
         self.wid = width
         self.frm = ''
+        self.mini = 0
         self.text = StringVar()
         self.input = StringVar()
-        self.get_img()
-        self.setbg()
         style = ttk.Style()
         style.configure("A.TLabel", relief=FLAT, foreground='red',anchor='center', font=('幼圆', 13),background= '#FDE6E0')
         style.configure("B.TLabel", relief=FLAT, foreground='black',anchor='center', font=('幼圆', 13),background= '#19CAAD')
@@ -75,6 +75,8 @@ class CheckPage(Page):
 
     def creat(self):
         print("check page!")
+        self.get_img()
+        self.setbg()
         #定义组件
         self.text.set('请输入股票代码:')
         self.frm = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = 20, borderwidth=0)
@@ -86,25 +88,21 @@ class CheckPage(Page):
         self.btn2 = ttk.Button(self.frm, style = 'B.TLabel', text="返回", cursor = 'hand2', width = 8, command = self.returnmain)
         self.btn3 = ttk.Button(self.frm, style = 'B.TLabel', text="隐藏", cursor = 'hand2', width = 8, command = self.minisize)
 
-        # self.VScroll = ttk.Scrollbar(self.frm, orient='vertical', command=self.listBox.yview)  # 创建滚动条
-        # self.listBox.configure(yscrollcommand=self.VScroll.set)  # 滚动条与表格控件关联
-        # self.VScroll.grid(row=1, column=5, sticky=NS)  # 滚动条放置位置
-        colwid = 70
+        colwid = 62
         self.frm1 = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
         self.frm1.place(x = 0, y = 22)
-        columns = ('1', '2', '3')
+        columns = ('1', '2', '3', '4')
         self.tree = ttk.Treeview(self.frm1, style='C.TLabel', height=10,show='headings', selectmode = BROWSE, columns=columns)  # 创建表格
         self.tree.heading("1", text = "Code")
         self.tree.heading("2", text = "Name")
         self.tree.heading("3", text = "Price")
+        self.tree.heading("4", text = "Preclose")
         self.tree.column("1", anchor = "center", width=colwid)
         self.tree.column("2", anchor = "center", width=colwid)
         self.tree.column("3", anchor = "center", width=colwid)
+        self.tree.column("4", anchor = "center", width=colwid)
         self.tree.bind('<ButtonRelease-1>',self.goToTop)
         self.tree.bind('<ButtonRelease-3>',self.goToBottom)
-        if self.th1 == 1:
-            thread.start_new_thread(self.freshStock, ())
-            self.th1 = 0
 
         self.title.grid(column=0, row=0)
         self.input.grid(column=1, row=0)
@@ -113,6 +111,9 @@ class CheckPage(Page):
         self.btn3.grid(column=4, row=0)
         
         self.input.focus()
+        if self.th1 == 1:
+            thread.start_new_thread(self.freshStock, ())
+            self.th1 = 0
 
     def goToTop(self,e):
         self.tree.tag_configure("select" ,foreground='purple',background='white')
@@ -129,6 +130,7 @@ class CheckPage(Page):
         MoveTopOrRoot(str(itm["1"]),0)
 
     def minisize(self):
+        self.mini = 1
         nums = getnums()
         hei = 45+nums*22
         self.root.geometry(f'400x{hei}+0+900')
@@ -136,6 +138,7 @@ class CheckPage(Page):
 
     def freshStock(self):
         print('start')
+        self.tree.tag_configure("down" ,foreground='#84fa84',background='black')
         while 1:
             setflash(1, 1)
             time.sleep(0.5)
@@ -151,7 +154,10 @@ class CheckPage(Page):
                     self.tree.delete(i)
                 # print(show)
                 for i in show:
-                    self.tree.insert('', 0, values=i)
+                    if i[2] < i[3]:
+                        self.tree.insert('', 0, values=i, tags='down')
+                    else:
+                        self.tree.insert('', 0, values=i)
                 self.tree.grid(column=0,row=0)
                 show.clear()
                 lock.release()
@@ -163,10 +169,12 @@ class CheckPage(Page):
 
     def GetStockInfo(self):
         GetOnedata(self.input.get())
+        if self.mini == 1:
+            self.minisize()
 
     def returnmain(self):
         self.th1 = 1
-        time.sleep(0.7)
+        # time.sleep(0.7)
         try:
             self.frm.destroy()
             self.frm1.destroy()
@@ -265,7 +273,7 @@ class MainPage(Page):
         screen_width = root.winfo_screenwidth() / 2 - width / 2
         screen_height = root.winfo_screenheight() / 2 - height / 2
         self.root = root
-        # root.iconbitmap('1.jpg')
+        root.iconbitmap('icon.ico')
         self.root.geometry(f'{width}x{height}+{int(screen_width)}+{int(screen_height)}')
         self.root.resizable(FALSE, FALSE)
         self.root.title('analyse stock')
@@ -300,10 +308,13 @@ class MainPage(Page):
         self.title.grid(column=0, row=0)
         self.checkbut.grid(column=0, row=0)
         self.choosebut.grid(column=0, row=0)
-        # self.checkbut.configure(relief='flat',activebackground='yellow')
+        # self.checkbut.configure(activebackground='yellow')
+
     def gotocheck(self):
         print("check!")
         self.frm.destroy()
+        self.frm1.destroy()
+        self.frm2.destroy()
         if self.err == 1:
             self.can.destroy()
         CheckPage(self.root, self.wid, self.hei)
@@ -311,6 +322,8 @@ class MainPage(Page):
     def gotochoose(self):
         print("choose!")
         self.frm.destroy()
+        self.frm1.destroy()
+        self.frm2.destroy()
         if self.err == 1:
             self.can.destroy()
         ChoosePage(self.root, self.wid, self.hei)
