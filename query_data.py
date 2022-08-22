@@ -1,5 +1,6 @@
 # -*- coding : UTF-8-*-
 from asyncio import Semaphore
+import datetime
 from glob import glob
 import tushare as ts
 import pandas as pd
@@ -55,7 +56,9 @@ def setflash(set, islock):
     lock.release()
 
 def slave():
-    while 1:
+    time1 = datetime.datetime.now().strftime('%H%M%S')
+    print(time1)
+    while 1:       
         flash = getflash()
         if flash == 1:
             # print('接到消息时')

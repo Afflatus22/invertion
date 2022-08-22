@@ -45,7 +45,6 @@ class Page:
     def setbg(self):
         #设置背景图片
         if self.err == 1:
-            print("yep")
             self.can = Canvas(self.root, width = self.wid, height = self.hei, bg='white')
             self.can.create_image(self.wid/2,self.hei/2,image = self.im)    #图片中心点位置
             self.can.grid(column=0,row=0)
@@ -70,7 +69,7 @@ class CheckPage(Page):
         self.frm = ''
         self.mini = 0
         self.text = StringVar()
-        self.input = StringVar()
+        self.inputtext = StringVar()
         self.getwinsize(self.root)
         style = ttk.Style()
         style.configure("A.TLabel", relief=FLAT, foreground='red',anchor='center', font=('幼圆', 13),background= '#FDE6E0')
@@ -89,7 +88,7 @@ class CheckPage(Page):
         self.frm.place(x = 0, y = 0)
 
         self.title = ttk.Label(self.frm, style = 'A.TLabel', textvariable=self.text)
-        self.input = ttk.Entry(self.frm, style = 'D.TLabel', width = 15, textvariable=self.input)
+        self.input = ttk.Entry(self.frm, style = 'D.TLabel', width = 15, textvariable=self.inputtext)
         self.btn1 = ttk.Button(self.frm, style = 'B.TLabel', text="添加", cursor = 'hand2',width = 8, command = self.GetStockInfo)
         self.btn2 = ttk.Button(self.frm, style = 'B.TLabel', text="返回", cursor = 'hand2', width = 8, command = self.returnmain)
         self.btn3 = ttk.Button(self.frm, style = 'B.TLabel', text="隐藏", cursor = 'hand2', width = 8, command = self.minisize)
@@ -189,11 +188,12 @@ class CheckPage(Page):
                 lock.release()
             time.sleep(1.5)
 
-    def GetStockInfo(self, e):
-        if self.input.get() != '':
-            GetOnedata(self.input.get())
+    def GetStockInfo(self, e = None):
+        if self.inputtext.get() != '':
+            GetOnedata(self.inputtext.get())
             if self.mini == 1:
                 self.minisize()
+        self.inputtext.set('')
 
     def returnmain(self):
         self.th1 = 1
