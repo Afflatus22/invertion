@@ -70,6 +70,7 @@ class CheckPage(Page):
         style.configure("B.TLabel", relief=FLAT, foreground='black',anchor='center', font=('幼圆', 13),background= '#19CAAD')
         style.configure("C.TLabel", width=15, relief=FLAT, foreground='red',anchor='center', font=('幼圆', 15),background= 'black')
         style.configure("D.TLabel", relief=FLAT, foreground='pink',anchor='center', font=('幼圆', 13),background= 'white')
+        style.configure("E.TLabel", relief=FLAT, foreground='red', font=('幼圆', 10),background= 'black')
         self.creat()
 
     def creat(self):
@@ -86,6 +87,7 @@ class CheckPage(Page):
         self.btn1 = ttk.Button(self.frm, style = 'B.TLabel', text="添加", cursor = 'hand2',width = 8, command = self.GetStockInfo)
         self.btn2 = ttk.Button(self.frm, style = 'B.TLabel', text="返回", cursor = 'hand2', width = 8, command = self.returnmain)
         self.btn3 = ttk.Button(self.frm, style = 'B.TLabel', text="隐藏", cursor = 'hand2', width = 8, command = self.minisize)
+        self.help = ttk.Label(self.root, style='E.TLabel', text='左键单击置顶\n右键单击置底\n鼠标滚轮单击删除')
 
         colwid = 62
         self.frm1 = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
@@ -114,6 +116,7 @@ class CheckPage(Page):
         self.btn1.grid(column=2, row=0)
         self.btn2.grid(column=3, row=0)
         self.btn3.grid(column=4, row=0)
+        self.help.place(x=580,y=450)
         
         self.input.focus()
         if self.th1 == 1:
@@ -196,6 +199,7 @@ class CheckPage(Page):
         try:
             self.frm.destroy()
             self.frm1.destroy()
+            self.help.destroy()
         except AttributeError as e:
             print(e)
         if self.err == 1:
