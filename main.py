@@ -14,6 +14,7 @@ def openapp(width, height):
     MainPage(root, width, height)
     root.mainloop()
 
+
 def main():
     #设置窗口大小
     width = 700

@@ -1,5 +1,6 @@
 # -*- coding : UTF-8-*-
 from asyncio import Semaphore
+from glob import glob
 import tushare as ts
 import pandas as pd
 import time
@@ -18,16 +19,20 @@ flash = 0
 sem = threading.Semaphore(1)
 lock = thread.allocate_lock()
 
-def MoveTopOrRoot(code, torr):
+def ItemHandle(code, torr):
     global myfav
+    global nums
     for i in myfav:
         if code == i:
             if torr == 1:
                 myfav.remove(i)
                 myfav.append(i)
-            else:
+            elif torr == 0:
                 myfav.remove(i)
                 myfav.insert(0, i)
+            elif torr == 2:
+                myfav.remove(i)
+                nums -=1
     f = open('./myfavlist.txt', 'w', encoding='utf-8')
     for i in myfav:
         f.write(i + '\n')
@@ -56,9 +61,19 @@ def slave():
             # print('接到消息时')
             global show
             global myfav
+            global nums
             for i in myfav:
-                data = ts.get_realtime_quotes(i)
-                show.append(list(data.loc[0,['code','name','price','pre_close']]))
+                try:
+                    data = ts.get_realtime_quotes(i)
+                    show.append(list(data.loc[0,['code','name','price','pre_close']]))
+                except Exception as e:
+                    print(str(e) + '股票代码不存在!')
+                    myfav.remove(i)
+                    f = open('./myfavlist.txt', 'w', encoding='utf-8')
+                    for j in myfav:
+                        f.write(j + '\n')
+                    nums -= 1
+                    f.close()
             setflash(0,0)
             time.sleep(0.3)
             # print('完成工作')

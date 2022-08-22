@@ -1,8 +1,10 @@
 
 # -*- coding : UTF-8-*-
+from asyncio import events
 import datetime
 from tkinter import *
 from tkinter import ttk
+from turtle import screensize
 from PIL import Image, ImageTk
 from query_data import *
 import time
@@ -48,6 +50,9 @@ class Page:
             self.can.create_image(self.wid/2,self.hei/2,image = self.im)    #图片中心点位置
             self.can.grid(column=0,row=0)
 
+    def getwinsize(self, root):
+        self.screen_width = root.winfo_screenwidth()
+        self.screen_height = root.winfo_screenheight()
 '''
 --------------------------------------
 定义查询类界面
@@ -66,6 +71,7 @@ class CheckPage(Page):
         self.mini = 0
         self.text = StringVar()
         self.input = StringVar()
+        self.getwinsize(self.root)
         style = ttk.Style()
         style.configure("A.TLabel", relief=FLAT, foreground='red',anchor='center', font=('幼圆', 13),background= '#FDE6E0')
         style.configure("B.TLabel", relief=FLAT, foreground='black',anchor='center', font=('幼圆', 13),background= '#19CAAD')
@@ -101,7 +107,12 @@ class CheckPage(Page):
         self.tree.column("2", anchor = "center", width=colwid)
         self.tree.column("3", anchor = "center", width=colwid)
         self.tree.column("4", anchor = "center", width=colwid)
+        self.tree.tag_configure("select" ,foreground='purple',background='white')
+
+        self.input.bind('<Return>', self.GetStockInfo)
         self.tree.bind('<ButtonRelease-1>',self.goToTop)
+        self.tree.bind('<Button-3>', self.selection)
+        self.tree.bind('<Double-1>', self.deleteitem)
         self.tree.bind('<ButtonRelease-3>',self.goToBottom)
 
         self.title.grid(column=0, row=0)
@@ -115,26 +126,37 @@ class CheckPage(Page):
             thread.start_new_thread(self.freshStock, ())
             self.th1 = 0
 
+    def deleteitem(self, e):
+        print('delete')
+        if self.tree.focus() != '':
+            itm = self.tree.set(self.tree.focus()) 
+            self.tree.delete(self.tree.focus())
+            ItemHandle(str(itm["1"]),2)
+
+    def selection(self, e):
+        print(f'{e.x}, {e.y}')
+        self.tree.focus(self.tree.identify('item', e.x, e.y))
+        self.tree.item(self.tree.focus(), tags='select')
+
     def goToTop(self,e):
-        self.tree.tag_configure("select" ,foreground='purple',background='white')
         self.tree.item(self.tree.focus(), tags='select')
         if self.tree.focus() != '':
             itm = self.tree.set(self.tree.focus()) 
             self.tree.move(self.tree.focus(),'', 0)
-            MoveTopOrRoot(str(itm["1"]),1)
+            ItemHandle(str(itm["1"]),1)
 
     def goToBottom(self,e):
-        self.tree.focus()
-        itm = self.tree.set(self.tree.focus()) 
-        self.tree.move(self.tree.focus(),'', "end")
-        MoveTopOrRoot(str(itm["1"]),0)
+        if self.tree.focus() != '':
+            itm = self.tree.set(self.tree.focus()) 
+            self.tree.move(self.tree.focus(),'', "end")
+            ItemHandle(str(itm["1"]),0)
 
     def minisize(self):
         self.mini = 1
         nums = getnums()
         hei = 45+nums*22
-        self.root.geometry(f'400x{hei}+0+900')
-        self.root.resizable(TRUE,TRUE)
+        self.root.geometry(f'400x{hei}+0+{self.screen_height - hei - 100}')
+        self.root.resizable(FALSE,FALSE)
 
     def freshStock(self):
         print('start')
@@ -167,10 +189,11 @@ class CheckPage(Page):
                 lock.release()
             time.sleep(1.5)
 
-    def GetStockInfo(self):
-        GetOnedata(self.input.get())
-        if self.mini == 1:
-            self.minisize()
+    def GetStockInfo(self, e):
+        if self.input.get() != '':
+            GetOnedata(self.input.get())
+            if self.mini == 1:
+                self.minisize()
 
     def returnmain(self):
         self.th1 = 1
@@ -265,14 +288,15 @@ class surprisePage(Page):
 class MainPage(Page):
 
     def __init__(self, root, width, height):
+        self.root = root
         self.hei = height
         self.wid = width
         self.frm = ''
         self.im = ''
         self.text = StringVar()
-        screen_width = root.winfo_screenwidth() / 2 - width / 2
-        screen_height = root.winfo_screenheight() / 2 - height / 2
-        self.root = root
+        self.getwinsize(self.root)
+        screen_width = (self.screen_width - self.wid)/2
+        screen_height = (self.screen_height - self.hei)/2
         root.iconbitmap('icon.ico')
         self.root.geometry(f'{width}x{height}+{int(screen_width)}+{int(screen_height)}')
         self.root.resizable(FALSE, FALSE)
