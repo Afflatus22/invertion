@@ -1,0 +1,258 @@
+<!DOCTYPE HTML>
+<html>
+   <head>
+   <meta charset="UTF-8">
+   <title>文件读取</title>
+   </head>
+
+   <script type="text/javascript">
+	var ip = "199.9.10.92"
+	var ws = null;
+	var type = false;
+	
+	function getip(){
+		ip = document.getElementById("IP").value
+		console.log(ip)
+	}
+
+	function readfile(){
+		var fileList = document.getElementById('files').files;
+		var reader = new FileReader();
+		reader.readAsText(fileList[0], "UTF-8");
+		reader.onload = function (e) {
+			const content = e.target.result;
+			console.log(fileList[0]);
+			console.log(content);
+			ws.send(content);
+			document.getElementById("text").value = content;
+		}
+	}
+
+	function sendinputtext(){
+		var value = document.getElementById("inputtext").value;
+		console.log(value);
+		ws.send(value);
+	}
+
+	function WebSocketTest(){
+		var btn = document.getElementsByClassName("btn-off")[0];
+		var circle = document.getElementsByClassName("btn-off-circle")[0];
+		var text = document.getElementsByClassName("btn-off-text")[0];
+		if ("WebSocket" in window)
+		{
+			console.log("您的浏览器支持 WebSocket!");
+			if(ip == null){
+				document.getElementById("status").value = "请输入IP！！！";
+				document.getElementById("IP").value = "请输入IP！！！";
+				return
+			}
+		// 打开一个 web socket
+		ws = new WebSocket("wss://" + ip + ":7200")
+		// ws = new WebSocket('ws://echo.websocket.org/')
+
+		ws.onopen = function()
+		{
+			// Web Socket 已连接上，使用 send() 方法发送数据
+			console.log("state:", ws.readyState);
+			console.log("socket connected...");
+			document.getElementById("status").value = "连接成功";
+			btn.style= "background-color: #12B090;"
+			circle.style="left: 85px;background-color: #FFFFFF;box-shadow: 0 0 10px white;";
+			text.style="right: 45px;color: white;";
+			text.innerText="已连接";
+			
+		};
+
+		ws.onmessage = function (event) 
+		{ 
+			//var received_msg = evt.data;
+			if(typeof(event.data)=="string"){ 
+				console.log(event.data)    
+			}else{
+				console.log(event.data)
+				var imgSrc = window.URL.createObjectURL(event.data)
+				document.getElementById('imgDiv').src = imgSrc
+			}
+			console.log("recv ok!");
+		};
+
+		ws.onclose = function()
+		{ 
+		// 关闭 websocket
+			console.log("socket closed..."); 
+			document.getElementById("status").value = "断开连接";
+			btn.style= ""
+			circle.style="";
+			text.style="";
+			text.innerText="已断开";
+			btn.setAttribute("onclick", "on_off(" + false + ")"); // 修改状态
+		};
+		}else{
+			// 浏览器不支持 WebSocket
+			console.log("您的浏览器不支持 WebSocket!");
+		}
+	}
+
+	function sendMsg(){
+		ws.send("testdata:"+Math.floor(Math.random()*1000));
+	}
+
+	function closewebskt(){
+		ws.close()
+	}
+
+	function on_off(type){
+		var btn = document.getElementsByClassName("btn-off")[0];
+		if(!type){
+			WebSocketTest()
+			btn.setAttribute("onclick", "on_off(" + true + ")"); // 修改状态
+		}else{
+			closewebskt()
+		}
+		
+	}
+	</script>
+
+   <style>
+		.mytest li{
+			width:50%;
+			float:left;
+			text-align: center;
+		}
+		.btn-off{
+			width: 120px;
+			height: 40px;
+			margin: 0 10px;
+			border-radius: 25px;
+			font-size: 20px;
+		}
+		.btn-off{
+			cursor: pointer;
+			position: relative;
+			border: 3px solid white;
+			background-color: #ccc;
+		}
+		.btn-off-circle{
+			position: absolute;
+			width: 30px;
+			height: 30px;
+			top: 5px;
+			left: 5px;
+			border-radius: 50%;
+			transition: all .5s;
+			background-color: #888;
+			box-shadow: 0 0 10px #888;
+		}
+		.btn-off-text{
+			top:6px;
+			position: absolute;
+			right: 15px;
+			line-height: 25px;
+			color: #888;
+			transition: all .5s;
+		}
+
+        body{
+			background-image: url(1.jpg);
+			background-repeat: repeat;
+			background-color:#C7EDCC;
+			height: 100vh;
+			transform: scale(1.0);
+        }
+		input{
+			width:400px;
+			height:40px;
+			font-size:20px;
+			text-align:center;
+			background-color:white;
+		}
+		input:focus{
+		    box-shadow: 0 0 5px #9ecaed;
+			outline: none;
+            border-color: #9ecaed;
+		}
+		p{
+			text-align: center;
+			vertical-align = middle;
+		}
+		button{
+			position:relative;
+			background-color:#F26345;
+			border:2px solid #008cba;
+			color:#163485;
+			margin: 4px 2px;
+			text-align:center;
+			transition-duration:0.4s;
+			-webkit-transition-duration:0.4s;
+			text-decoration:none;
+			overflow:hidden;
+			cursor:pointer;
+			padding:10px 20px; 
+			width:120px;
+			height:100px;
+			font-size:20px;
+			border-radius:8px;
+		}
+		button:after{
+			content:"";
+			background:#a9a9a9;
+			display:block;
+			position:absolute;
+			padding-top:300%;
+			padding-left:350%;
+			margin-left:-20px;
+			margin-top:-120%;
+			opacity:0;
+			transition:all 0.8s;
+		}
+		button:active:after{
+			padding:0
+			margin:0;
+			opacity:1;
+			transition:0s
+			}
+		textarea{
+			font-size:20px;
+		}
+   </style>
+
+	<body>
+	<ul class = "mytest">
+	<li>
+		<p class="btn-off" onclick="on_off()">
+			<!-- 圆点 -->
+			<span class="btn-off-circle"></span>
+			<!-- 文字 -->
+			<span class="btn-off-text">已断开</span>
+		</p>
+		<p>
+			<font size = "5" face = "arial" color = "redblue">目标IP地址:</font><br><br>
+			<input id ="IP" type ="text" onchange = "getip()"/>
+		</p>
+		<p>
+			<font size = "5" face = "arial" color = "redblue">连接状态:</font><br><br>
+			<input id ="status" type ="text" value = "未连接" />
+		</p>
+		
+		<hr>
+		<p>
+			<input type="file" name="file" multiple="multiple" id="files" onchange="readfile()" /><br><br>
+			<textarea id="text" cols="40" rows="10"></textarea><br>
+			<button onclick = "readfile()">发送</button>
+		</p>
+		<hr>
+		<p>
+			<font size = "5" face = "arial" color = "redblue">输入指令:</font><br><br>
+			<textarea id="inputtext" cols="40" rows="10" name = "inputtext"></textarea><br>
+			<button onclick = "sendinputtext()">发送</button></p><br><br>
+		</p>
+		<p><font size = "2" face = "arial" >同目录下添加1.jpg文件可设置背景</font></p>
+		<li>
+		<li>
+		<p>
+		<img  src=""  height=800 width=500 id="imgDiv"/>
+		</p>
+		<li>
+	</body>
+	</ul>
+</html>

@@ -74,7 +74,6 @@ class CheckPage(Page):
         self.creat()
 
     def creat(self):
-        print("check page!")
         self.get_img()
         self.setbg()
         #定义组件
@@ -227,7 +226,6 @@ class ChoosePage(Page):
         self.creat()
 
     def creat(self):
-        print("check page!")
         #定义组件
         self.text.set('请勾选需要的指标:')
         self.frm = ttk.Frame(self.root,style='B.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
@@ -277,6 +275,53 @@ class surprisePage(Page):
         self.frm = ttk.Frame(self.root, padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=2)
         self.frm.place(x = 0, y = 0)
         ttk.Label(self.frm, font=('宋体', 20, 'italic'), text = 'I SAY I LOVE YOU FOREVER!',background= '#FDE6E0').grid(column=1, row=0)
+
+'''
+--------------------------------------
+定义爬虫功能界面
+--------------------------------------
+'''
+
+class spiderPage(Page):
+    def __init__(self, root, width, height):
+        self.root = root
+        self.hei = height
+        self.wid = width
+        self.frm = ''
+        self.text = StringVar()
+        self.input = StringVar()
+        self.get_img()
+        self.setbg()
+        style = ttk.Style()
+        style.configure("B.TLabel", relief=FLAT, foreground='black',anchor='center', font=('幼圆', 13),background= '#19CAAD')
+        self.creat()
+
+    def creat(self):
+        #定义组件
+        self.text.set('请勾选需要的指标:')
+        self.frm = ttk.Frame(self.root,style='B.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
+        self.frm.place(x = 0, y = 0)
+        self.macd = IntVar()
+        self.kdj = IntVar()
+        ttk.Label(self.frm, style = 'B.TLabel', textvariable = self.text).grid(column=0, row=0)
+        ttk.Checkbutton(self.frm, text = "MACD金叉", variable = self.macd, onvalue = 1, offvalue = 0).grid(column=0, row=1)
+        ttk.Checkbutton(self.frm, text = "KDJ金叉", variable = self.kdj, onvalue = 1, offvalue = 0).grid(column=1, row=1)
+        ttk.Button(self.frm, style = 'B.TLabel', width = 12, text = "开始选股", command=self.PickStock).grid(column=0, row=2)
+        ttk.Button(self.frm, style = 'B.TLabel', text="返回", width= 12, command=self.returnmain).grid(column=1,row=2)
+        self.tree = ttk.Treeview(self.frm, height=15, columns=2)  # 创建表格
+        # self.VScroll = ttk.Scrollbar(self.frm, orient='vertical', command=self.listBox.yview)  # 创建滚动条
+        # self.listBox.configure(yscrollcommand=self.VScroll.set)  # 滚动条与表格控件关联
+        # self.VScroll.grid(row=1, column=5, sticky=NS)  # 滚动条放置位置
+    
+    def PickStock(self):
+        # self.tree
+        print("pick!")
+
+    def returnmain(self):
+        self.frm.destroy()
+        if self.err == 1:
+            self.can.destroy()
+        MainPage(self.root, self.wid, self.hei)
 
 '''
 --------------------------------------
