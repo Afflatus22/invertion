@@ -63,7 +63,8 @@ def slave():
             for i in myfav:
                 try:
                     data = ts.get_realtime_quotes(i)
-                    show.append(list(data.loc[0,['code','name','price','pre_close']]))
+                    codelist = list(data.loc[0,['code','name','price','pre_close']])
+                    show.append(codelist)
                 except Exception as e:
                     print(str(e) + '股票代码不存在!')
                     myfav.remove(i)

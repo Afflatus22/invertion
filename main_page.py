@@ -90,19 +90,21 @@ class CheckPage(Page):
         self.btn3 = ttk.Button(self.frm, style = 'B.TLabel', text="隐藏", cursor = 'hand2', width = 8, command = self.minisize)
         self.help = ttk.Label(self.root, style='E.TLabel', text='左键单击置顶\n右键单击置底\n鼠标滚轮单击删除')
 
-        colwid = 62
+        colwid = 60
         self.frm1 = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
         self.frm1.place(x = 0, y = 22)
-        columns = ('1', '2', '3', '4')
+        columns = ('1', '2', '3', '4', '5')
         self.tree = ttk.Treeview(self.frm1, style='C.TLabel', height=10,show='headings', selectmode = BROWSE, columns=columns)  # 创建表格
         self.tree.heading("1", text = "Code")
         self.tree.heading("2", text = "Name")
         self.tree.heading("3", text = "Price")
-        self.tree.heading("4", text = "Preclose")
-        self.tree.column("1", anchor = "center", width=colwid)
+        self.tree.heading("4", text = "Ratio")
+        self.tree.heading("5", text = "Preclose")
+        self.tree.column("1", anchor = "center", width=50)
         self.tree.column("2", anchor = "center", width=colwid)
-        self.tree.column("3", anchor = "center", width=colwid)
-        self.tree.column("4", anchor = "center", width=colwid)
+        self.tree.column("3", anchor = "center", width=50)
+        self.tree.column("4", anchor = "center", width=40)
+        self.tree.column("5", anchor = "center", width=50)
         self.tree.tag_configure("select" ,foreground='purple',background='white')
 
         self.input.bind('<Return>', self.GetStockInfo)
@@ -130,6 +132,8 @@ class CheckPage(Page):
             itm = self.tree.set(self.tree.focus()) 
             self.tree.delete(self.tree.focus())
             ItemHandle(str(itm["1"]),2)
+            if self.mini == 1:
+                self.minisize()
 
     def selection(self, e):
         print(f'{e.x}, {e.y}')
@@ -174,7 +178,8 @@ class CheckPage(Page):
                     self.tree.delete(i)
                 # print(show)
                 for i in show:
-                    if i[2] < i[3]:
+                    i.insert(3, str(round((float(i[2]) - float(i[3]))*100/float(i[3]),2)) + '%')
+                    if i[2] < i[4]:
                         self.tree.insert('', 0, values=i, tags='down')
                     else:
                         self.tree.insert('', 0, values=i)
