@@ -1,4 +1,6 @@
 #coding = uft-8
+from email.header import Header
+import types
 import requests
 import lxml
 import sys
@@ -15,6 +17,23 @@ def client(threadName, delay):
         time.sleep(delay)
         count += 1
         print("%s, %s" %(threadName, time.ctime(time.time())))
+
+def getspider(web):
+    header = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'}
+    web = "https://" + web
+    print("抓取的网址是：" + web)
+    req = requests.get(web, headers= header)
+    print('获取网址状态：' + str(req))
+    print('获取到的网址内容')
+    print(req.content)
+    bsobj = bb(req.content, 'lxml')
+    a_list = bsobj.find_all('a')
+    text = ''
+    for a in a_list:
+        href = a.get('href')
+        if href is not None:
+            text += href + '\n'
+    print('获取到的网址链接：' + '\n' + text)
 
 def host(delay, web):
     time.sleep(delay)

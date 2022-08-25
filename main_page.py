@@ -1,8 +1,10 @@
 # --coding: utf-8 --
+from ast import Return
 from tkinter import *
 from tkinter import ttk
 from PIL import Image, ImageTk
 from query_data import *
+from spider import *
 
 #定义父类
 class Page:
@@ -282,7 +284,7 @@ class surprisePage(Page):
 --------------------------------------
 '''
 
-class spiderPage(Page):
+class SpiderPage(Page):
     def __init__(self, root, width, height):
         self.root = root
         self.hei = height
@@ -293,29 +295,33 @@ class spiderPage(Page):
         self.get_img()
         self.setbg()
         style = ttk.Style()
+        style.configure("D.TLabel", relief=FLAT, foreground='pink',anchor='center', font=('幼圆', 13),background= 'white')
         style.configure("B.TLabel", relief=FLAT, foreground='black',anchor='center', font=('幼圆', 13),background= '#19CAAD')
         self.creat()
 
     def creat(self):
         #定义组件
-        self.text.set('请勾选需要的指标:')
+        self.text.set('请输入要爬的网址:')
         self.frm = ttk.Frame(self.root,style='B.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
         self.frm.place(x = 0, y = 0)
-        self.macd = IntVar()
-        self.kdj = IntVar()
-        ttk.Label(self.frm, style = 'B.TLabel', textvariable = self.text).grid(column=0, row=0)
-        ttk.Checkbutton(self.frm, text = "MACD金叉", variable = self.macd, onvalue = 1, offvalue = 0).grid(column=0, row=1)
-        ttk.Checkbutton(self.frm, text = "KDJ金叉", variable = self.kdj, onvalue = 1, offvalue = 0).grid(column=1, row=1)
-        ttk.Button(self.frm, style = 'B.TLabel', width = 12, text = "开始选股", command=self.PickStock).grid(column=0, row=2)
-        ttk.Button(self.frm, style = 'B.TLabel', text="返回", width= 12, command=self.returnmain).grid(column=1,row=2)
-        self.tree = ttk.Treeview(self.frm, height=15, columns=2)  # 创建表格
-        # self.VScroll = ttk.Scrollbar(self.frm, orient='vertical', command=self.listBox.yview)  # 创建滚动条
-        # self.listBox.configure(yscrollcommand=self.VScroll.set)  # 滚动条与表格控件关联
-        # self.VScroll.grid(row=1, column=5, sticky=NS)  # 滚动条放置位置
-    
-    def PickStock(self):
-        # self.tree
-        print("pick!")
+
+        self.lab = ttk.Label(self.frm, style = 'B.TLabel', textvariable = self.text)
+        self.entry = ttk.Entry(self.frm, style = 'D.TLabel',width=15, textvariable = self.input)
+        self.but = ttk.Button(self.frm, style = 'B.TLabel', width = 8, text = "开始", command=self.startSpider)
+        self.but1 = ttk.Button(self.frm, style = 'B.TLabel', text="返回", width= 8, command=self.returnmain)
+        self.tree = ttk.Treeview(self.frm, height=15, columns=2)
+
+        self.lab.grid(column=0, row=0)
+        self.entry.grid(column=1, row=0)
+        self.but.grid(column=2,row=0)
+        self.but1.grid(column = 3, row=0)
+        
+        self.entry.focus()
+        self.entry.bind('<Return>', self.startSpider)
+
+    def startSpider(self, e = None):
+        print("SPIDER!")
+        getspider(str(self.input.get()))
 
     def returnmain(self):
         self.frm.destroy()
@@ -370,7 +376,7 @@ class MainPage(Page):
         self.title = ttk.Label(self.frm,style = 'BW.TLabel',anchor='center',textvariable=self.text)
         self.checkbut = ttk.Button(self.frm1, style = 'A.TLabel', text="盯盘精灵", cursor = 'hand2',width = 16, command = self.gotocheck)
         # self.blank3 = ttk.Label(self.frm,style = 'BW.TLabel',anchor='center')
-        self.choosebut = ttk.Button(self.frm2,style = 'A.TLabel', text="量化选股", cursor = 'hand2', width = 16, command = self.gotochoose)
+        self.choosebut = ttk.Button(self.frm2,style = 'A.TLabel', text="爬虫工具", cursor = 'hand2', width = 16, command = self.gotochoose)
 
         #控件布局
         self.title.grid(column=0, row=0)
@@ -394,6 +400,6 @@ class MainPage(Page):
         self.frm2.destroy()
         if self.err == 1:
             self.can.destroy()
-        ChoosePage(self.root, self.wid, self.hei)
+        SpiderPage(self.root, self.wid, self.hei)
         # surprisePage(self.root)
         
