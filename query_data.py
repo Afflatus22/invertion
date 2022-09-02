@@ -87,11 +87,12 @@ def GetOnedata(code):
     global nums
     #初始化ts参数
     ts.set_token('df8ba8bf0035f774d5d15c760a7bdf864bd22c45887e9fc7097769f4')
-    myfav.append(code)
-    f = open('./myfavlist.txt', 'a', encoding='utf-8')
-    f.write(code + '\n')
-    nums += 1
-    f.close()
+    if code not in myfav:
+        myfav.append(code)
+        f = open('./myfavlist.txt', 'a', encoding='utf-8')
+        f.write(code + '\n')
+        nums += 1
+        f.close()
 
 def GetItemsFromFile():
     global myfav
