@@ -90,7 +90,7 @@ class CheckPage(Page):
         self.btn3 = ttk.Button(self.frm, style = 'B.TLabel', text="隐藏", cursor = 'hand2', width = 8, command = self.minisize)
         self.help = ttk.Label(self.root, style='E.TLabel', text='左键单击置顶\n右键单击置底\n鼠标滚轮单击删除')
 
-        colwid = 60
+        colwid = 120
         self.frm1 = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
         self.frm1.place(x = 0, y = 22)
         columns = ('1', '2', '3', '4', '5')
@@ -327,6 +327,9 @@ class SpiderPage(Page):
     def startSpider(self, e = None):
         print("SPIDER!")
         getspider(str(self.input.get()))
+
+    def checkRatio(self):
+        GetDvRatioFromtushare()
 
     def returnmain(self):
         self.frm.destroy()

@@ -9,11 +9,13 @@ if(sys.version[:1] == "3"):
 else:
     import thread 
 
+token = 'df8ba8bf0035f774d5d15c760a7bdf864bd22c45887e9fc7097769f4'
 nums = 0
 myfav = []
 show = []
 flash = 0
 lock = thread.allocate_lock()
+ts.set_token(token) #初始化ts参数
 
 def ItemHandle(code, torr):
     global myfav
@@ -85,8 +87,6 @@ def slave():
 def GetOnedata(code):
     global myfav
     global nums
-    #初始化ts参数
-    ts.set_token('df8ba8bf0035f774d5d15c760a7bdf864bd22c45887e9fc7097769f4')
     if code not in myfav:
         myfav.append(code)
         f = open('./myfavlist.txt', 'a', encoding='utf-8')
@@ -110,3 +110,11 @@ def GetItemsFromFile():
     else:
         f = open(path, 'w', encoding='utf-8')
         f.close()
+
+def GetDvRatioFromtushare():
+    pro = ts.pro_api(token=token)
+    df1 = pro.daily_basic(trade_date = '202201010')
+    df1.set_index(['ts_code'], inplace = True)
+    df1 = df1[['dv_ratio']]
+    df1 = df1.sort_values('dv_ratio', ascending=False)
+    print(df1)
