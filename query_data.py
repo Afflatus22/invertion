@@ -25,8 +25,8 @@ ts.set_token(token) #初始化ts参数
 
 def getTimeData(code):
     df = ef.futures.get_realtime_quotes()
-    rm = df.loc[df['期货代码'] == code, ['期货名称','最新价']]
-    return rm.loc[693]['最新价']
+    index = df.loc[df['期货代码'] == code].index.tolist()[0]
+    return df.loc[index]['最新价']
 # while 1:
 #     rm_time = getTimeData('RM305')
 #     print(rm_time)
