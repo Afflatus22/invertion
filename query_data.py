@@ -4,6 +4,8 @@ import tushare as ts
 import time
 import sys
 import os
+import numpy as np
+import efinance as ef
 if(sys.version[:1] == "3"):
     import _thread as thread
 else:
@@ -16,6 +18,19 @@ show = []
 flash = 0
 lock = thread.allocate_lock()
 ts.set_token(token) #初始化ts参数
+
+# 期货代码 期货名称 涨跌幅 最新价 最高 最低 今开 涨跌额 换手率 量比 动态市盈率 成交量 成交额  昨日收盘 总市值 流通市值  行情ID 市场类型
+# 获取一段时间的期货日K 线数据
+# df = ef.futures.get_quote_history(secid, beg=beg, end=end)
+
+def getTimeData(code):
+    df = ef.futures.get_realtime_quotes()
+    rm = df.loc[df['期货代码'] == code, ['期货名称','最新价']]
+    return rm.loc[693]['最新价']
+# while 1:
+#     rm_time = getTimeData('RM305')
+#     print(rm_time)
+#     time.sleep(1)
 
 def ItemHandle(code, torr):
     global myfav
