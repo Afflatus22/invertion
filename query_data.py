@@ -25,12 +25,8 @@ ts.set_token(token) #初始化ts参数
 
 def getTimeData(code):
     df = ef.futures.get_realtime_quotes()
-    index = df.loc[df['期货代码'] == code].index.tolist()[0]
-    return df.loc[index]['最新价']
-# while 1:
-#     rm_time = getTimeData('RM305')
-#     print(rm_time)
-#     time.sleep(1)
+    index = df.loc[df['期货代码'] == code].index.tolist()[0]    
+    return list(df.loc[index, ['期货代码','期货名称', '最新价','今开']])
 
 def ItemHandle(code, torr):
     global myfav
@@ -78,18 +74,22 @@ def slave():
             global myfav
             global nums
             for i in myfav:
-                try:
-                    data = ts.get_realtime_quotes(i)
-                    codelist = list(data.loc[0,['code','name','price','pre_close']])
-                    show.append(codelist)
-                except Exception as e:
-                    print(str(e) + '股票代码不存在!')
-                    myfav.remove(i)
-                    f = open('./myfavlist.txt', 'w', encoding='utf-8')
-                    for j in myfav:
-                        f.write(j + '\n')
-                    nums -= 1
-                    f.close()
+                if i[0].isalpha() == True:
+                    code = getTimeData(i)
+                    show.append(code)
+                else:
+                    try:
+                        data = ts.get_realtime_quotes(i)
+                        codelist = list(data.loc[0,['code','name','price','pre_close']])
+                        show.append(codelist)
+                    except Exception as e:
+                        print(str(e) + '股票代码不存在!')
+                        myfav.remove(i)
+                        f = open('./myfavlist.txt', 'w', encoding='utf-8')
+                        for j in myfav:
+                            f.write(j + '\n')
+                        nums -= 1
+                        f.close()
             setflash(0,0)
             time.sleep(0.3)
             # print('完成工作')
