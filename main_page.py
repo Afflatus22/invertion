@@ -339,6 +339,64 @@ class SpiderPage(Page):
 
 '''
 --------------------------------------
+定义展示功能界面
+--------------------------------------
+'''
+
+class ShowPage(Page):
+    def __init__(self, root, width, height):
+        self.root = root
+        self.hei = height
+        self.wid = width
+        self.frm = ''
+        self.text = StringVar()
+        self.text1 = StringVar()
+        self.input = StringVar()
+        self.get_img()
+        self.setbg()
+        style = ttk.Style()
+        style.configure("D.TLabel", relief=FLAT, foreground='#D1BA74',anchor='center', font=('幼圆', 13),background= 'black')
+        style.configure("E.TLabel", relief=FLAT, foreground='white',anchor='center', font=('幼圆', 13),background= 'black')
+        style.configure("B.TLabel", relief=RAISED, foreground='black',anchor='center', font=('幼圆', 13),background= 'white')
+        self.creat()
+
+    def creat(self):
+        #定义组件
+        self.text.set('Nothing for now!')
+        self.text1.set('显示窗口:')
+        self.frm = ttk.Frame(self.root,style='D.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei/2, borderwidth=1)
+        self.frm.place(x = 5, y = 5, bordermode = 'outside', height= 400, width=690)
+        self.frm1 = ttk.Frame(self.root,style='E.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=5)
+        self.frm1.place(x = 5, y = 300, height= 200, width=690)
+
+        self.lab = ttk.Label(self.frm, style = 'D.TLabel', textvariable = self.text1)
+        self.lab1 = ttk.Label(self.frm, style = 'E.TLabel', textvariable = self.text)
+        self.but = ttk.Button(self.frm1, style = 'B.TLabel', width = 8, padding= 5 , text = "开始", command=self.startSpider)
+        self.but2 = ttk.Button(self.frm1, style = 'B.TLabel', width = 8, padding= 5 , text = "结束", command=self.startSpider)
+        self.but1 = ttk.Button(self.frm1, style = 'B.TLabel', text="返回", width= 8, padding= 5  , command=self.returnmain)
+        self.tree = ttk.Treeview(self.frm1, height=15, columns=2)
+
+        self.lab.grid(column=0, row=0)
+        self.lab1.grid(column=1, row=0)
+        self.but.grid(column=1,row=0, padx= 10, sticky= 's',pady= 10)
+        self.but2.grid(column = 2, row=0, padx= 10, pady= 10)
+        self.but1.grid(column = 3, row=0, padx= 10, pady= 10)
+
+    def startSpider(self, e = None):
+        print("show!")
+        self.text.set('is good')
+
+    def checkRatio(self):
+        GetDvRatioFromtushare()
+
+    def returnmain(self):
+        self.frm.destroy()
+        if self.err == 1:
+            self.can.destroy()
+        MainPage(self.root, self.wid, self.hei)
+
+'''
+--------------------------------------
 定义主页类界面
 --------------------------------------
 '''
@@ -369,7 +427,7 @@ class MainPage(Page):
         self.text.set('欢迎来到股票小助手!')
         style = ttk.Style()
         style.configure("BW.TLabel", foreground = '#D1BA74',font=('楷体', 30, 'bold'),background= '#BEEDC7')
-        style.configure("A.TLabel",activebackground='yellow',activeforeground='blue', relief=FLAT , foreground='red',anchor='center', font=('幼圆', 20),background= '#19CAAD')
+        style.configure("A.TLabel",activebackground='yellow',activeforeground='blue', relief=RIDGE , foreground='red',anchor='center', font=('幼圆', 20),background= '#19CAAD')
         # print(self.frm.configure().keys())
         # print(ttk.Style().configure().keys())
         #设置框架
@@ -379,17 +437,21 @@ class MainPage(Page):
         self.frm1.place(x = 233, y = 230)
         self.frm2 = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
         self.frm2.place(x = 233, y = 300)
+        self.frm3 = ttk.Frame(self.root,style='BW.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=0)
+        self.frm3.place(x = 233, y = 370)
 
         #设置控件
         self.title = ttk.Label(self.frm,style = 'BW.TLabel',anchor='center',textvariable=self.text)
         self.checkbut = ttk.Button(self.frm1, style = 'A.TLabel', text="盯盘精灵", cursor = 'hand2',width = 16, command = self.gotocheck)
         # self.blank3 = ttk.Label(self.frm,style = 'BW.TLabel',anchor='center')
         self.choosebut = ttk.Button(self.frm2,style = 'A.TLabel', text="爬虫工具", cursor = 'hand2', width = 16, command = self.gotochoose)
+        self.showbut = ttk.Button(self.frm3,style = 'A.TLabel', text="量化交易", cursor = 'hand2', width = 16, command = self.gotoshow)
 
         #控件布局
         self.title.grid(column=0, row=0)
         self.checkbut.grid(column=0, row=0)
         self.choosebut.grid(column=0, row=0)
+        self.showbut.grid(column=0, row=0)
         # self.checkbut.configure(activebackground='yellow')
 
     def gotocheck(self):
@@ -410,4 +472,13 @@ class MainPage(Page):
             self.can.destroy()
         SpiderPage(self.root, self.wid, self.hei)
         # surprisePage(self.root)
+
+    def gotoshow(self):
+        print("show!")
+        self.frm.destroy()
+        self.frm1.destroy()
+        self.frm2.destroy()
+        if self.err == 1:
+            self.can.destroy()
+        ShowPage(self.root, self.wid, self.hei)
         
