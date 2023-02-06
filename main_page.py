@@ -357,7 +357,7 @@ class ShowPage(Page):
         style = ttk.Style()
         style.configure("D.TLabel", relief=FLAT, foreground='black',anchor='center', font=('幼圆', 22),background= '#949294')
         style.configure("E.TLabel", relief=FLAT, foreground='white',anchor='center', font=('幼圆', 13),background= '#5c5c5c')
-        style.configure("F.TLabel", relief=FLAT, foreground='white',anchor='center', font=('幼圆', 13),background= '#5c5c5c')
+        style.configure("F.TLabel", relief=FLAT, foreground='white',anchor='center', font=('幼圆', 13),background= 'black')
         style.configure("B.TLabel", relief=RAISED, foreground='black',anchor='center', font=('幼圆', 13),background= 'white', activebackground = 'red', border = 3)
         self.creat()
 
@@ -365,15 +365,18 @@ class ShowPage(Page):
         #定义组件
         self.text.set('Nothing for now!\n')
         self.text1.set('显示窗口')
+        self.frm2 = ttk.Frame(self.root,style='F.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=5)
+        self.frm2.place(x = 0, y = 0, height= 500, width=700)
         self.frm0 = ttk.Frame(self.root,style='D.TLabel', padding = (0, 0, 0, 0), width = 40, height = self.hei/2, borderwidth=2)
         self.frm0.place(x = 5, y = 5, height= 300, width=40)
         self.frm = ttk.Frame(self.root,style='E.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei/2, borderwidth=1)
         self.frm.place(x = 50, y = 5, height= 300, width=645)
-        self.frm1 = ttk.Frame(self.root,style='F.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=5)
+        self.frm1 = ttk.Frame(self.root,style='E.TLabel', padding = (0, 0, 0, 0), width = self.wid, height = self.hei, borderwidth=5)
         self.frm1.place(x = 5, y = 310, height= 185, width=690)
+        
 
         self.lab = ttk.Label(self.frm0, style = 'D.TLabel', anchor=CENTER, textvariable = self.text1,wraplength = 10, border= 5, borderwidth=2)
-        self.lab1 = ttk.Label(self.frm, style = 'E.TLabel', textvariable = self.text)
+        self.lab1 = ttk.Label(self.frm, style = 'E.TLabel', textvariable = self.text, wraplength=645)
         self.but = ttk.Button(self.frm1, style = 'B.TLabel', cursor = 'hand2', width = 8, padding= 5 , text = "开始", command=self.startSpider)
         self.but2 = ttk.Button(self.frm1, style = 'B.TLabel', cursor = 'hand2', width = 8, padding= 5 , text = "结束", command=self.startSpider)
         self.but1 = ttk.Button(self.frm1, style = 'B.TLabel', cursor = 'hand2', text="返回", width= 8, padding= 5  , command=self.returnmain)
@@ -387,7 +390,7 @@ class ShowPage(Page):
 
     def startSpider(self, e = None):
         print("show!")
-        self.text.set('is good')
+        self.text.set('is good today you are very good boy, so let us go to play, and cool man so gogoogogogogoogogogogogogogogogoogog!!!!!!!!!!!!!!!')
 
     def checkRatio(self):
         GetDvRatioFromtushare()
