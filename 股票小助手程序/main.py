@@ -1,5 +1,5 @@
 # --coding: utf-8 --
-from main_page import *
+from market_analyze import *
 
 def appinit():
     GetItemsFromFile()
