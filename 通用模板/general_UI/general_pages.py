@@ -12,8 +12,15 @@ class Page:
         self.hei
         self.can
         self.time
-        
-    def get_img(self):
+
+    #获取当前时间
+    def gettime(self):
+        time = datetime.datetime
+        endtime = time.today().strftime('%Y%m%d')
+        self.time = endtime
+
+    #设置背景图片
+    def setbg(self):
         self.impath = '1.jpg'
         self.btnpath = 'btn.png'
         self.err = 1
@@ -24,22 +31,32 @@ class Page:
         except FileNotFoundError as e:
             print('请在文件目录添加1.jpg的背景图片!')
             self.err = 0
-       
-    def gettime(self):
-        time = datetime.datetime
-        endtime = time.today().strftime('%Y%m%d')
-        self.time = endtime
-
-    def setbg(self):
         #设置背景图片
         if self.err == 1:
             self.can = Canvas(self.root, width = self.wid, height = self.hei, bg='white')
             self.can.create_image(self.wid/2,self.hei/2,image = self.im)    #图片中心点位置
             self.can.grid(column=0,row=0)
 
+    #获取win大小
     def getwinsize(self, root):
         self.screen_width = root.winfo_screenwidth()
         self.screen_height = root.winfo_screenheight()
+
+    #app窗口初始化
+    def win_init(self, title=None, iconimg=None):
+        self.setbg()
+        self.getwinsize(self.root)
+        screen_width = (self.screen_width - self.wid)/2
+        screen_height = (self.screen_height - self.hei)/2
+        try:
+            self.root.iconbitmap(iconimg)
+        except:
+            print('icon.ico not found')
+        self.root.geometry(f'{self.wid}x{self.hei}+{int(screen_width)}+{int(screen_height)}')
+        self.root.resizable(FALSE, FALSE)
+        if title is not None:
+            self.root.title(title)
+        self.root.configure(bg='#BEEDC7')
 '''
 --------------------------------------
 定义查询类界面
@@ -68,7 +85,6 @@ class CheckPage(Page):
         self.creat()
 
     def creat(self):
-        self.get_img()
         self.setbg()
         #定义组件
         self.text.set('请输入:')
@@ -118,7 +134,7 @@ class CheckPage(Page):
         # time.sleep(0.7)
         try:
             self.frm.destroy()
-            self.frm1.destroy()
+            # self.frm1.destroy()
             self.help.destroy()
         except AttributeError as e:
             print(e)
@@ -140,7 +156,6 @@ class ChoosePage(Page):
         self.frm = ''
         self.text = StringVar()
         self.input = StringVar()
-        self.get_img()
         self.setbg()
         style = ttk.Style()
         style.configure("B.TLabel", relief=FLAT, foreground='black',anchor='center', font=('幼圆', 13),background= '#19CAAD')
@@ -208,7 +223,6 @@ class ShowPage(Page):
         self.text = StringVar()
         self.text1 = StringVar()
         self.input = StringVar()
-        self.get_img()
         self.setbg()
         style = ttk.Style()
         style.configure("D.TLabel", relief=FLAT, foreground='black',anchor='center', font=('幼圆', 22),background= '#949294')
@@ -270,21 +284,11 @@ class MainPage(Page):
         self.frm = ''
         self.im = ''
         self.text = StringVar()
-        self.getwinsize(self.root)
-        screen_width = (self.screen_width - self.wid)/2
-        screen_height = (self.screen_height - self.hei)/2
-        try:
-            root.iconbitmap('icon.ico')
-        except:
-            print('icon.ico not found')
-        self.root.geometry(f'{width}x{height}+{int(screen_width)}+{int(screen_height)}')
-        self.root.resizable(FALSE, FALSE)
-        self.root.title('小吴工具箱')
+        self.win_init('小吴工具箱', 'icon.ico')
         self.root.configure(bg='#BEEDC7')
         self.creat()
 
     def creat(self):
-        self.get_img()
         self.setbg()
         #定义组件
         self.text.set('欢迎来到小吴工具箱!')
